@@ -1,5 +1,5 @@
 # C-Compiler-
-Making a compiler with flex and bison for C language
+Making a compiler with flex and bison for C language(UNI PROJECT)
 
 
 
