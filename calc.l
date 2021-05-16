@@ -1,3 +1,7 @@
+
+
+
+
 %option yylineno
 
 %{
@@ -15,7 +19,7 @@ void printtokens(int tokenum);
 %option noyywrap
 %option yylineno
 
-
+%x C_COMMENT 
 
 letters [a-zA-z]
 digit        [0-9]
@@ -24,21 +28,15 @@ intident     [1-9]
 alphanums    ([a-zA-Z]+)[0-9]+
 boolean		("true"|"false")
 ws 			[ \t\n\r]
-string		(\\.|[^\"])*
-
-
+string	\"([^\\\"]|\\.)*\"
+floatn   [+-]?([0-9]*[.])?[0-9]+
 
 
 %%
-\/\/(.*) ;	//comments gia mia grammi 
-\/\*(.*\n)*.*\*\/  ;		//comments gia multilines  
-
-
-
-
 
 "PROGRAM"      {printtokens(T_PROGRAM); return T_PROGRAM;}
 "FUNCTION"    {printtokens(T_FUNCTION); return T_FUNCTION;}
+"PRINT"      {printtokens(T_PRINT); return T_PRINT;}
 "VARS"        {printtokens(T_VARS); return T_VARS;}
 "CHAR"        {printtokens(T_char); return T_char;}
 "ENDFUNCTION" {printtokens(T_end); return T_end;}
@@ -49,16 +47,16 @@ string		(\\.|[^\"])*
 "TYPEDEF"          {printtokens(T_TYPEDEF); return T_TYPEDEF;}
 "STRUCT"          {printtokens(T_STRUCT); return T_STRUCT;}
 "ENDSTRUCT"          {printtokens(T_ENDSTRUCT); return T_ENDSTRUCT;}
-"SWITCH"      {printtokens(T_SWITCH); return T_SWITCH;}    
+"SWITCH"      {printtokens(T_SWITCH); return T_SWITCH;}
 "CASE"        {printtokens(T_CASE); return T_CASE;}
 "BREAK"       {printtokens(T_BREAK); return T_BREAK;}
-"WHILE"       {printtokens(T_WHILE); return T_WHILE;}      
+"WHILE"       {printtokens(T_WHILE); return T_WHILE;}
 "INT"         {printtokens(T_int); return T_int;}
 "FLOAT"      {printtokens(T_float); return T_float;}
 "ELSE"        {printtokens(T_ELSE); return T_ELSE;}
 "ELSEIF"      {printtokens(T_ELSEIF); return T_ELSEIF;}
 "FOR"         {printtokens(T_FOR); return T_FOR;}
-"=="|"!="	    {printtokens(T_equop); return T_equop;}       
+"=="|"!="	    {printtokens(T_equop); return T_equop;}
 ">"|"<"|">="|"<=" {printtokens(T_relop); return T_relop;}
 "+"|"-"       {printtokens(T_adop); return T_adop;}
 "*"|"/"|"%"|"^"  {printtokens(T_mulop); return T_mulop;}
@@ -84,13 +82,16 @@ string		(\\.|[^\"])*
 "THEN"      {printtokens(T_THEN); return T_THEN;}
 "DEFAULT"      {printtokens(T_DEFAULT); return T_DEFAULT;}
 {boolean} 		{printtokens(T_boolean); return T_boolean;}
-{digit}+"."{digit}+  {printtokens(T_floatident); return T_floatident;}
-{intident}{digit}*|0     {printtokens(T_intident ); return T_intident ;}
+{floatn}               {printtokens(T_floatident); return T_floatident;}
+{intident}*{digit}*|0     {printtokens(T_intident ); return T_intident ;}
 {alphanums}|{letters}+  {printtokens(T_charident ); return T_charident ;}
 {alphanums}"["{digit}+"]"|{letters}+"["{digit}+"]" {printtokens(T_pin); return T_pin;}
+{string}  {printtokens(T_string ); return T_string ;}
+"/*"            { BEGIN(C_COMMENT); }
+<C_COMMENT>"*/" { BEGIN(INITIAL); }
+<C_COMMENT>.    { }
+[%].*
 
-
-[ \t\n]                                ; 
 
 {ws}				{     }
 .           {yyerror("unrecognized character");}
@@ -113,5 +114,5 @@ void yyerror(const char* err){
   if(error_counter==10){
     printf("found max errors");
   }
-  
+
 }
