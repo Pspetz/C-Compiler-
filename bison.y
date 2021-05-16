@@ -1,3 +1,5 @@
+
+
 %{
 #include <stdio.h>
 #include <math.h>
@@ -21,7 +23,7 @@ extern int yylex();
 }
 
 %token T_eof   0 "end of file"
-%token T_IF   "IF" 
+%token T_IF   "IF"
 %token T_ELSE  "ELSE"
 %token T_STARTMAIN "STARTMAIN"
 %token T_FOR   "FOR"
@@ -29,7 +31,7 @@ extern int yylex();
 %token T_PROGRAM  "PROGRAM"
 %token T_semicolon  ";"
 %token T_komma ","
-%token T_openagk "{" 
+%token T_openagk "{"
 %token T_closeagk "}"
 %token T_openpar "["
 %token T_closepar "]"
@@ -38,7 +40,7 @@ extern int yylex();
 %token T_int "INT"
 %token T_VARS "VARS"
 %token T_float "FLOAT"
-%token <floatval> T_floatident "floatnumber" 
+%token <floatval> T_floatident "floatnumber"
 %token T_ws "kena"
 %token T_telia "."
 %token T_ELSEIF "ELSEIF"
@@ -65,7 +67,7 @@ extern int yylex();
 %token T_SWITCH "SWITCH"
 %token T_WHILE "WHILE"
 %token T_colon ":"
-%token T_CASE "CASE" /**/ 
+%token T_CASE "CASE" /**/
 %token T_PRINT "PRINT"
 %token T_ENDWHILE "ENDWHILE"
 %token T_ENDIF "ENDIF"
@@ -75,11 +77,11 @@ extern int yylex();
 %token T_STRUCT "STRUCT"
 %token T_ENDSTRUCT "ENDSTRUCT"
 %token T_TYPEDEF "TYPEDEF"
-//%token T_AFTAKIA """
+%token T_string "string"
 
 %%
 
-arxiko_programma: T_PROGRAM onoma {printf("\n");} swma_programmatos ;
+Arxiko_programma: T_PROGRAM onoma {printf("\n");} swma_programmatos ;
 
 onoma: T_charident ;
 
@@ -87,14 +89,16 @@ dilosi_domis: T_STRUCT onoma {printf("\n");} dilwsi_metavlitis T_ENDSTRUCT
   |T_TYPEDEF T_STRUCT onoma {printf("\n");} dilwsi_metavlitis {printf("\n");} onoma T_ENDSTRUCT
   ;
 
-swma_programmatos : Functions  main_function 
+
+swma_programmatos : dilosi_domis Functions  main_function
+   | dilosi_domis main_function
    | main_function 
    ;
 
 Functions : T_FUNCTION onoma T_open P1 T_close swma_Function T_return T_charident {printf("\n");} T_end ;
 
-P1 : %empty 
-   | V1 P1 
+P1 : %empty
+   | V1 P1
    ;
 
 V1 : tupos_metavlitis d
@@ -104,35 +108,35 @@ V1 : tupos_metavlitis d
 d  : onoma | pinakas;
 
 
-pinakas :T_pin ; 
+pinakas :T_pin ;
 
-tupos_metavlitis : T_int 
-                 | T_float 
+tupos_metavlitis : T_int
+                 | T_float
                  | T_char
                  ;
 
-swma_Function : dilwsi_metavlitis entoles_programmatos 
-             | dilwsi_metavlitis 
+swma_Function : dilwsi_metavlitis entoles_programmatos
+             | dilwsi_metavlitis
              | %empty
              ;
 
-dilwsi_metavlitis : T_VARS tropos_dilwsis T_semicolon ; 
+dilwsi_metavlitis : T_VARS tropos_dilwsis T_semicolon ;
 
 tropos_dilwsis : tupos_metavlitis P2 ;
 
-P2 : V2 
-   | V2 P2 
+P2 : V2
+   | V2 P2
    ;
 V2 : d
    | d T_komma | T_komma d G
    ;
-   
-G  : %empty 
+
+G  : %empty
    ;
 
-entoles_programmatos : entoles_anathesis loipes_entoles  
-                     |entoles_anathesis   
-                     | loipes_entoles 
+entoles_programmatos : entoles_anathesis loipes_entoles
+                     |entoles_anathesis
+                     | loipes_entoles
                      | %empty
                      ;
 
@@ -147,16 +151,16 @@ main_function: T_STARTMAIN dilwsi_metavlitis entoles_programmatos T_ENDMAIN
  ;
 
 ekfrasi : apli_ekfrasi
-        | suntheti_ekfrasi 
+        | suntheti_ekfrasi
         ;
 
-apli_ekfrasi : metavliti 
+apli_ekfrasi : metavliti
              | arithmos
              // | sunartisi
              ;
 
 arithmos: T_intident
-  | T_floatident 
+  | T_floatident
   ;
 
 A: metavliti
@@ -165,12 +169,12 @@ A: metavliti
 
 suntheti_ekfrasi :  A  k ;
 
-k : Vk 
+k : Vk
   | Vk k
   ;
 
-Vk:  T_adop A 
-  |  T_mulop A 
+Vk:  T_adop A
+  |  T_mulop A
   ;
 
 
@@ -183,7 +187,7 @@ loipes_entoles : dick /* entoles_vroxou entoles_elegxou entoles_ekt
                | entoles_ekt
                | entoles_vroxou
                | entoles_elegxou
-               | %empty 
+               | %empty
                ;  */
 
 
@@ -196,15 +200,15 @@ Q:entoles_vroxou entoles_elegxou entoles_ekt
                | entoles_ekt
                | entoles_vroxou
                | entoles_elegxou
-               | %empty  ;
+               //| %empty  ;//
 
 
 
 
 
-                                           
-entoles_vroxou : for_entoles 
-                | while_entoles 
+
+entoles_vroxou : for_entoles
+                | while_entoles
                 ;
 
 for_entoles : T_FOR counter T_colon T_ASSIGN noumero T_TO giwta T_STEP noumero {printf("\n");} entoles_programmatos L T_ENDFOR ;
@@ -218,31 +222,30 @@ counter:metavliti ;
 while_entoles: T_WHILE T_open synthiki T_close {printf("\n");} entoles_programmatos L T_ENDWHILE ;
 
 
-telestes: telestes_sygkrisis 
+//telestes: telestes_sygkrisis
  | telestes_logikis
- ;
- 
-telestes_sygkrisis: T_relop 
+ ;//
+
+telestes_sygkrisis: T_relop
  | T_equop
  ;
- 
+
 telestes_logikis: T_ANDOP
  | T_OROP
- ;
+ ; 
 
-L: %empty 
+L: %empty
  | Vl L
  ;
 
-Vl : T_BREAK ;
+Vl : T_BREAK T_semicolon ;
 
+entoles_ekt : T_PRINT T_open T_string X T_close T_semicolon ;
 
-entoles_ekt : T_PRINT T_open X T_close T_semicolon ;
+X: %empty | joe X  ;
 
-X: onoma d 
- | onoma
- ;
- 
+joe:   T_komma d  ;
+
 
 entoles_elegxou: if_entoles
                | switch_entoles
@@ -251,39 +254,38 @@ entoles_elegxou: if_entoles
 
 if_entoles: T_IF T_open synthiki T_close T_THEN {printf("\n");} entoles_programmatos elseif else L T_ENDIF ;
 
-synthiki: P | T   // (x<10) h if(x<y) h if(x&&5)  if(x<y or x>z)      INT X=1;  IF(X==1) THEN PRINT("SWSTO") if(x<y || x<y) 
-	      // A telestes_sygkrisis A
- P: A telestes_sygkrisis A // X<Y x<=Y ... 
- T: %empty | J T 
+synthiki: P 
+        | T   ;
+	     
+ P: A telestes_sygkrisis A ;
+ T: %empty 
+  | J T
+  ;
  J: P telestes_logikis P 
-  | telestes_logikis P 
+  | telestes_logikis P
+  ;
 
 
-elseif: %empty                 // if elseif elseif else                 if else                 if else ifelse 
- | T_ELSEIF  entoles_programmatos      
- | T_ELSEIF  entoles_programmatos elseif   
- ;
- 
+elseif: %empty                 
+ //| T_ELSEIF  entoles_programmatos//
+      | T_ELSEIF  entoles_programmatos elseif
+      ;
+
  else: %empty
- | T_ELSE entoles_programmatos 
- ;
- 
- switch_entoles: T_SWITCH T_open ekfrasi T_close {printf("\n");} case T_ENDSWITCH;
-  
- case: T_CASE T_open expr T_close T_colon {printf("\n");} entoles_programmatos L case     
- | T_CASE T_open expr T_close T_colon {printf("\n");} entoles_programmatos L  
- | default
- ;
- 
- default: %empty
- | T_DEFAULT T_colon {printf("\n");} entoles_programmatos L
- ;
- 
- expr: onoma
- | noumero
- ;
- 
- 
+     | T_ELSE entoles_programmatos
+     ;
+
+ switch_entoles: T_SWITCH  T_open ekfrasi  T_close {printf("\n");} case  T_ENDSWITCH ;
+
+case: M L
+    | M L case
+    | M L default 
+    ;
+
+M: T_CASE T_open ekfrasi T_close T_colon {printf("\n");} entoles_programmatos ;
+
+default: T_DEFAULT T_colon entoles_programmatos ;
+
 %%
 
 int main(int argc, char *argv[]) {
