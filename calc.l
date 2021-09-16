@@ -1,7 +1,3 @@
-
-
-
-
 %option yylineno
 
 %{
@@ -39,7 +35,7 @@ floatn   [+-]?([0-9]*[.])?[0-9]+
 "PRINT"      {printtokens(T_PRINT); return T_PRINT;}
 "VARS"        {printtokens(T_VARS); return T_VARS;}
 "CHAR"        {printtokens(T_char); return T_char;}
-"ENDFUNCTION" {printtokens(T_end); return T_end;}
+"END_FUNCTION" {printtokens(T_end); return T_end;}
 "RETURN"      {printtokens(T_return); return T_return;}
 "STARTMAIN"    {printtokens(T_STARTMAIN); return T_STARTMAIN;}
 "ENDMAIN"      {printtokens(T_ENDMAIN); return T_ENDMAIN;}
@@ -116,3 +112,6 @@ void yyerror(const char* err){
   }
 
 }
+
+
+
