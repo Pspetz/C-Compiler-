@@ -1,5 +1,3 @@
-
-
 %{
 #include <stdio.h>
 #include <math.h>
@@ -49,13 +47,13 @@ extern int yylex();
 %token T_NOT "!"
 %token T_adop  "+ or -"
 %token T_equop " == or != "
-%token T_end "ENDFUNCTION"
+%token T_end "END_FUNCTION"
 %token T_mulop "* or / or  % or ^"
 %token T_char "CHAR"
 %token T_ENDMAIN "ENDMAIN"
 %token T_return "RETURN"
 %token <charval> T_charident "charnumber"
-%token T_pin "PINAKAS"
+%token T_pin "TABLE"
 %token T_open "("
 %token T_close ")"
 %token T_relop "< or > or <= or >="
@@ -81,48 +79,48 @@ extern int yylex();
 
 %%
 
-Arxiko_programma: T_PROGRAM onoma {printf("\n");} swma_programmatos ;
+PROGRAM: T_PROGRAM name {printf("\n");} body_program ;
 
-onoma: T_charident ;
+name: T_charident ;
 
-dilosi_domis: T_STRUCT onoma {printf("\n");} dilwsi_metavlitis T_ENDSTRUCT
-  |T_TYPEDEF T_STRUCT onoma {printf("\n");} dilwsi_metavlitis {printf("\n");} onoma T_ENDSTRUCT
+Struct : T_STRUCT name {printf("\n");} variable_declaration T_ENDSTRUCT
+  |T_TYPEDEF T_STRUCT name {printf("\n");} variable_declaration {printf("\n");} name T_ENDSTRUCT
   ;
 
-
-swma_programmatos : dilosi_domis Functions  main_function
-   | dilosi_domis main_function
-   | main_function 
+body_program : Struct Functions  Main_function
+   | Struct Main_function
+   | Main_function 
    ;
 
-Functions : T_FUNCTION onoma T_open P1 T_close swma_Function T_return T_charident {printf("\n");} T_end ;
+Functions : T_FUNCTION name T_open P1 T_close body_Function T_return T_charident {printf("\n");} T_end ;
 
 P1 : %empty
    | V1 P1
    ;
 
-V1 : tupos_metavlitis d
-   | tupos_metavlitis d T_komma
+V1 : type_variable d
+   | type_variable d T_komma V1
    ;
 
-d  : onoma | pinakas;
+d  : name
+   | table
+   ;
 
+table :T_pin ;
 
-pinakas :T_pin ;
-
-tupos_metavlitis : T_int
+type_variable : T_int
                  | T_float
                  | T_char
                  ;
 
-swma_Function : dilwsi_metavlitis entoles_programmatos
-             | dilwsi_metavlitis
+body_Function : variable_declaration program_commands
+             | variable_declaration
              | %empty
              ;
 
-dilwsi_metavlitis : T_VARS tropos_dilwsis T_semicolon ;
+variable_declaration : T_VARS format  T_semicolon ; // format = tropos dilosis 
 
-tropos_dilwsis : tupos_metavlitis P2 ;
+format : type_variable P2 ;
 
 P2 : V2
    | V2 P2
@@ -134,157 +132,151 @@ V2 : d
 G  : %empty
    ;
 
-entoles_programmatos : entoles_anathesis loipes_entoles
-                     |entoles_anathesis
-                     | loipes_entoles
+program_commands : assign_commands extra_commands
+                     | assign_commands
+					 | assign_commands program_commands
+                     | extra_commands
                      | %empty
                      ;
 
-entoles_anathesis : cock ;
-cock: vcock|vcock cock ;
-vcock:metavliti T_ASSIGN ekfrasi T_semicolon ;
 
-metavliti : d ;
+assign_commands: variable T_ASSIGN expression T_semicolon ;
 
-main_function: T_STARTMAIN dilwsi_metavlitis entoles_programmatos T_ENDMAIN
- |  T_STARTMAIN entoles_programmatos T_ENDMAIN
- ;
+expression:  oros
+		  | function 
+		  ;
 
-ekfrasi : apli_ekfrasi
-        | suntheti_ekfrasi
-        ;
+function: name T_open orisma T_close  ;
 
-apli_ekfrasi : metavliti
-             | arithmos
-             // | sunartisi
+orisma: variable
+      | variable T_komma orisma
+	  ; 
+
+//parenthesi: T_open A T_close ;
+
+oros: A
+	| A telestes A oros
+	| A telestes parenthesi oros
+	;
+	
+parenthesi: T_open A T_close 
+          | T_open A T_close parenthesi ;
+	
+variable : d ;
+
+A: variable
+  | variable telestes A
+  | number 
+  | number telestes A
+  ;
+  
+ telestes: T_adop
+         | T_mulop
+		 ;
+		 
+number : T_intident
+       | T_floatident
+       ; 
+	   
+Main_function: T_STARTMAIN variable_declaration program_commands T_ENDMAIN
+             |  T_STARTMAIN program_commands T_ENDMAIN
              ;
 
-arithmos: T_intident
-  | T_floatident
+extra_commands : H ;
+
+
+H : Q 
+  |Q H 
   ;
 
-A: metavliti
-  | arithmos
-  ;
-
-suntheti_ekfrasi :  A  k ;
-
-k : Vk
-  | Vk k
-  ;
-
-Vk:  T_adop A
-  |  T_mulop A
-  ;
+Q : loop_commands control_commands print_command
+               | loop_commands print_command
+               | control_commands print_command
+               | loop_commands  control_commands
+               | print_command
+               | loop_commands
+               | control_commands
+               ;
 
 
-
-
-loipes_entoles : dick /* entoles_vroxou entoles_elegxou entoles_ekt
-               | entoles_vroxou entoles_ekt
-               | entoles_elegxou entoles_ekt
-               | entoles_vroxou  entoles_elegxou
-               | entoles_ekt
-               | entoles_vroxou
-               | entoles_elegxou
-               | %empty
-               ;  */
-
-
-dick: Q |Q dick ;
-
-Q:entoles_vroxou entoles_elegxou entoles_ekt
-               | entoles_vroxou entoles_ekt
-               | entoles_elegxou entoles_ekt
-               | entoles_vroxou  entoles_elegxou
-               | entoles_ekt
-               | entoles_vroxou
-               | entoles_elegxou
-               //| %empty  ;//
-
-
-
-
-
-
-entoles_vroxou : for_entoles
-                | while_entoles
+loop_commands : For_command
+                | While_command
                 ;
 
-for_entoles : T_FOR counter T_colon T_ASSIGN noumero T_TO giwta T_STEP noumero {printf("\n");} entoles_programmatos L T_ENDFOR ;
+For_command : T_FOR counter T_colon T_ASSIGN number T_TO number T_STEP number {printf("\n");} program_commands L T_ENDFOR ;
 
-giwta:T_intident | T_charident ;
-
-noumero: T_intident;
-
-counter:metavliti ;
-
-while_entoles: T_WHILE T_open synthiki T_close {printf("\n");} entoles_programmatos L T_ENDWHILE ;
+//type :T_intident 
+     | T_charident ;//
 
 
-//telestes: telestes_sygkrisis
- | telestes_logikis
- ;//
 
-telestes_sygkrisis: T_relop
+counter : variable ;
+
+While_command : T_WHILE T_open condition T_close {printf("\n");} program_commands L T_ENDWHILE ;
+
+
+comparison_operator: T_relop
  | T_equop
  ;
 
-telestes_logikis: T_ANDOP
+logic_operators: T_ANDOP
  | T_OROP
  ; 
 
 L: %empty
- | Vl L
+ | break_command L
  ;
 
-Vl : T_BREAK T_semicolon ;
+break_command : T_BREAK T_semicolon ;
 
-entoles_ekt : T_PRINT T_open T_string X T_close T_semicolon ;
+print_command : T_PRINT T_open T_string X T_close T_semicolon ;
 
-X: %empty | joe X  ;
+X : %empty 
+  | F X  ;
 
-joe:   T_komma d  ;
+F :   T_komma d  ;
 
 
-entoles_elegxou: if_entoles
-               | switch_entoles
-               | if_entoles switch_entoles
-               ;
+control_commands: If_command
+                | Switch_command
+                | If_command Switch_command
+                ;
 
-if_entoles: T_IF T_open synthiki T_close T_THEN {printf("\n");} entoles_programmatos elseif else L T_ENDIF ;
+If_command : T_IF T_open condition T_close T_THEN {printf("\n");} program_commands elseif else L T_ENDIF ;
 
-synthiki: P 
-        | T   ;
+condition : P 
+          | T  
+		  ;
 	     
- P: A telestes_sygkrisis A ;
+ P: A comparison_operator A ;
+ 
  T: %empty 
   | J T
   ;
- J: P telestes_logikis P 
-  | telestes_logikis P
+
+ J: P logic_operators P 
+  | logic_operators P
   ;
 
 
-elseif: %empty                 
- //| T_ELSEIF  entoles_programmatos//
-      | T_ELSEIF  entoles_programmatos elseif
+elseif : %empty                 
+      | T_ELSEIF  program_commands elseif
       ;
 
- else: %empty
-     | T_ELSE entoles_programmatos
+else : %empty
+      | T_ELSE program_commands
+      ;
+
+Switch_command : T_SWITCH  T_open expression T_close {printf("\n");} case  T_ENDSWITCH ;
+
+case : M L
+     | M L case
+     | M L default L
      ;
 
- switch_entoles: T_SWITCH  T_open ekfrasi  T_close {printf("\n");} case  T_ENDSWITCH ;
+M : T_CASE T_open expression T_close T_colon {printf("\n");} program_commands ;
 
-case: M L
-    | M L case
-    | M L default 
-    ;
-
-M: T_CASE T_open ekfrasi T_close T_colon {printf("\n");} entoles_programmatos ;
-
-default: T_DEFAULT T_colon entoles_programmatos ;
+default : T_DEFAULT T_colon program_commands ;
 
 %%
 
