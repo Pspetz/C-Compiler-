@@ -1,0 +1,26 @@
+PROGRAM EXAMPLE2
+TYPEDEF STRUCT example2
+
+VARS
+CHAR var1,var2[4],var3;
+example2 ENDSTRUCT
+
+FUNCTION example2(INT num, CHAR var1)
+VARS
+CHAR var5;
+RETURN var5
+END_FUNCTION
+
+STARTMAIN
+
+
+var6=var1;
+var2=1;
+var4=var1/ 1 + 2*var1- 4+ 2 * var2[5] ;
+
+FOR counter:=10 TO 1000 STEP 10
+WHILE ( var1==num && var2<2 || var3<4 )
+PRINT("apotelesma=num");
+ENDWHILE
+ENDFOR
+ENDMAIN
