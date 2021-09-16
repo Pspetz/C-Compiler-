@@ -1,0 +1,44 @@
+PROGRAM EXAMPLE1
+STRUCT example
+VARS
+CHAR var[10];
+ENDSTRUCT
+
+FUNCTION example1( CHAR x, INT z)
+VARS/* DILOSI shagv
+hsahbxcav */
+CHAR var1,var2,var3,var[10];
+var2=12;
+var3=10;
+
+RETURN var3 
+END_FUNCTION
+
+
+STARTMAIN
+VARS 
+CHAR var7;
+var2=12;
+
+IF(var1>5)
+THEN
+PRINT("Result=%d",var1);
+ELSEIF
+PRINT("Result=%d",var3);
+ELSE
+PRINT("Result=%d",var2);
+ENDIF
+
+SWITCH(num)
+CASE(var3):
+PRINT("apotelesma=10");
+BREAK;
+CASE(var2):
+PRINT("apotelesma=12");
+BREAK;
+DEFAULT:
+PRINT("apotelesma=%d", num);
+BREAK;
+
+ENDSWITCH
+ENDMAIN
